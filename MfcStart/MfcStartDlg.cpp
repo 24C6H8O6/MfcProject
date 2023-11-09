@@ -10,6 +10,7 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
+#pragma comment(linker, "/entry:WinMainCRTStrartup /subsystem:console")  // 디버그 모드에서는 항상 콘솔이 나옴(디버그에서 콘솔 쓰기 위함)
 #endif
 
 
@@ -52,7 +53,8 @@ END_MESSAGE_MAP()
 
 CMfcStartDlg::CMfcStartDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCSTART_DIALOG, pParent)
-	, m_nNum(0)
+	, m_nNum(100)
+	, m_nNum2(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -61,6 +63,7 @@ void CMfcStartDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_NUM, m_nNum);
+	DDX_Text(pDX, IDC_EDIT_NUM2, m_nNum2);
 }
 
 // 이벤트에 대해 정리
@@ -105,6 +108,7 @@ BOOL CMfcStartDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	SetDlgItemText(IDC_STATIC_RESULT, _T("0"));
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -159,10 +163,26 @@ HCURSOR CMfcStartDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
+// 디버그 쓰는 방식을 알 필요가 있음
+#include <iostream>
+#include <string>
+using namespace std;
 void CMfcStartDlg::OnBnClickedBtnTest()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	AfxMessageBox(_T("hello windows"));
+	// 0부터 m_nNum까지 합 구하기
+	UpdateData(TRUE);
+	/*
+	int nSum = 0;
+	for (int i = 0; i < m_nNum; i++) {
+		cout << i << endl;
+		nSum += i;
+	}
+	m_nNum = nSum;
+	*/
+	int m_nSum = 0;
+	m_nSum = m_nNum + m_nNum2;
+	SetDlgItemText(IDC_STATIC_RESULT, (std::to_wstring(m_nSum).c_str()));
+	UpdateData(false);
 }
+	

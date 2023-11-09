@@ -35,4 +35,5 @@ protected:
 public:
 	afx_msg void OnBnClickedBtnTest();
 	int m_nNum;  // 헝가리안 표기법
+	int m_nNum2;
 };
