@@ -66,6 +66,8 @@ BEGIN_MESSAGE_MAP(CMfcCImageDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BTN_IMAGE, &CMfcCImageDlg::OnBnClickedBtnImage)
+	ON_BN_CLICKED(IDC_BTN_SAVE, &CMfcCImageDlg::OnBnClickedBtnSave)
+	ON_BN_CLICKED(IDC_BTN_LOAD, &CMfcCImageDlg::OnBnClickedBtnLoad)
 END_MESSAGE_MAP()
 
 
@@ -163,7 +165,7 @@ void CMfcCImageDlg::OnBnClickedBtnImage()
 	int nHeight = 480;
 	int nBpp = 8;
 
-	m_image.Create(nWidth, nHeight, nBpp);
+	m_image.Create(nWidth, -nHeight, nBpp);
 	if (nBpp == 8) {
 		static RGBQUAD rgb[256];
 		for (int i = 0; i < 256; i++)
@@ -174,23 +176,59 @@ void CMfcCImageDlg::OnBnClickedBtnImage()
 	int nPitch = m_image.GetPitch();
 	// m_image의 첫번째 포인터의 값을 가져오겠다 는 의미
 	unsigned char* fm = (unsigned char*)m_image.GetBits();
+
+	memset(fm, 0xff, nWidth * nHeight);
+
 	// 그라데이션
+	
 	for (int j = 0; j < nHeight; j++) {
 		for (int i = 0; i < nWidth; i++) {
-			fm[j * nPitch + i] = (j * 10) % 255;
+			fm[j * nPitch + i] = (j % 0xff);
 		}
 	}
+	
+	
 
 	// fm[0 * nPitch + 0] = 128;
 	// fm[0 * nPitch + 1] = 128;
 	// fm[1 * nPitch + 1] = 128;
+	/*
 	for (int j = 0; j < nHeight/2; j++) {
 		for (int i = 0; i < nWidth/2; i++) {
 			fm[j * nPitch + i] = 200;
 		}
 	}
+	*/
+	
+	UpdateDisplay();
+}
+
+CString g_strFileImage = _T("C:\\Users\\user\\Downloads\\save.bmp");
+void CMfcCImageDlg::OnBnClickedBtnSave()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	m_image.Save(g_strFileImage);
+}
+
+
+void CMfcCImageDlg::OnBnClickedBtnLoad()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	if (m_image != NULL) {
+		m_image.Destroy();
+	}
+	m_image.Load(g_strFileImage);
+
+	UpdateDisplay();
+}
+
+void CMfcCImageDlg::UpdateDisplay()
+{
 	CClientDC dc(this);
 	m_image.Draw(dc, 0, 0);
+}
 
-	m_image.Save(_T("C:\\Users\\LMS116\\Downloads\\save.bmp"));
+void CMfcCImageDlg::moveRect()
+{
+	
 }
