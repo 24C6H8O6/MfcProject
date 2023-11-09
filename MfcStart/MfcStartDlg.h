@@ -6,6 +6,7 @@
 
 
 // CMfcStartDlg 대화 상자
+// CDialogEx 클래스를 상속 받은 CMfcStartDlg 클래스
 class CMfcStartDlg : public CDialogEx
 {
 // 생성입니다.
@@ -31,4 +32,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedBtnTest();
+	int m_nNum;  // 헝가리안 표기법
 };

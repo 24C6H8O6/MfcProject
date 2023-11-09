@@ -52,6 +52,7 @@ END_MESSAGE_MAP()
 
 CMfcStartDlg::CMfcStartDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCSTART_DIALOG, pParent)
+	, m_nNum(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -59,17 +60,21 @@ CMfcStartDlg::CMfcStartDlg(CWnd* pParent /*=nullptr*/)
 void CMfcStartDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Text(pDX, IDC_EDIT_NUM, m_nNum);
 }
 
+// 이벤트에 대해 정리
 BEGIN_MESSAGE_MAP(CMfcStartDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BTN_TEST, &CMfcStartDlg::OnBnClickedBtnTest)    // 버튼변수명에 대한 클릭 이벤트
 END_MESSAGE_MAP()
 
 
 // CMfcStartDlg 메시지 처리기
-
+// CMfcStartDlg 클래스 안의 OnInitDialog() 함수
+// Dialog를 초기화할 때 만드는 함수
 BOOL CMfcStartDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -121,6 +126,7 @@ void CMfcStartDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 애플리케이션의 경우에는
 //  프레임워크에서 이 작업을 자동으로 수행합니다.
 
+// 화면에 그리기를 할 때 사용
 void CMfcStartDlg::OnPaint()
 {
 	if (IsIconic())
@@ -153,3 +159,10 @@ HCURSOR CMfcStartDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CMfcStartDlg::OnBnClickedBtnTest()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	AfxMessageBox(_T("hello windows"));
+}
