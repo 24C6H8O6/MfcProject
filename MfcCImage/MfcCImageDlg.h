@@ -39,4 +39,5 @@ public:
 	afx_msg void OnBnClickedBtnLoad();
 	void UpdateDisplay();
 	void moveRect();
+	afx_msg void OnBnClickedBtnAction();
 };

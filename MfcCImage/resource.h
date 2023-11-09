@@ -9,8 +9,9 @@
 #define IDR_MAINFRAME                   128
 #define IDC_BUTTON1                     1000
 #define IDC_BTN_IMAGE                   1000
+#define IDC_BTN_IMAGE2                  1001
+#define IDC_BTN_ACTION                  1001
 #define IDC_BTN_SAVE                    1002
-#define IDC_BTN_SAVE2                   1003
 #define IDC_BTN_LOAD                    1003
 
 // Next default values for new objects
