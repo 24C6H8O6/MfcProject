@@ -10,6 +10,7 @@ class CMfcCImageDlg : public CDialogEx
 {
 private:
 	CImage m_image;
+	BOOL validImgPos(int x, int y);
 // 생성입니다.
 public:
 	CMfcCImageDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.

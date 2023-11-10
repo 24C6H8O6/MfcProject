@@ -231,26 +231,49 @@ void CMfcCImageDlg::UpdateDisplay()
 
 void CMfcCImageDlg::moveRect()
 {
-	int nWidth = 640;
-	int nHeight = 480;
-	int nBpp = 8;
-
-	m_image.Create(nWidth, -nHeight, nBpp);
-	if (nBpp == 8) {
-		static RGBQUAD rgb[256];
-		for (int i = 0; i < 256; i++)
-			rgb[i].rgbRed = rgb[i].rgbGreen = rgb[i].rgbBlue = i;
-		m_image.SetColorTable(0, 256, rgb);
-	}
-
+	// static을 쓰지 않고 int로만 하면 계속 0으로 초기화
+	// static을 쓰면 값을 기억함
+	static int nSttX = 0;
+	static int nSttY = 0;
+	int nGray = 80;
+	int nWidth = m_image.GetWidth();
+	int nHeight = m_image.GetHeight();
 	int nPitch = m_image.GetPitch();
-	// m_image의 첫번째 포인터의 값을 가져오겠다 는 의미
 	unsigned char* fm = (unsigned char*)m_image.GetBits();
-
+	
 	memset(fm, 0xff, nWidth * nHeight);
+
+	for (int j = nSttY; j < nSttY+48; j++)
+	{
+		for (int i = nSttX; i < nSttX+64; i++) {
+			if (validImgPos(i,j))
+				fm[j * nPitch + i] = nGray;
+
+		}
+	}
+	nSttX++;
+	nSttY++;
+	UpdateDisplay();
+
 }
 
 void CMfcCImageDlg::OnBnClickedBtnAction()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	for (int i = 0; i < 100; i++) {
+		moveRect();
+		Sleep(10);
+	}
+		
+}
+
+BOOL CMfcCImageDlg::validImgPos(int x, int y) 
+{
+	int nWidth = m_image.GetWidth();
+	int nHeight = m_image.GetHeight();
+	// 0,0 의 영역을 만듬
+	CRect rect(0, 0, nWidth, nHeight);
+	// CPoint 안의 x,y가  rect 영역에 들어가면 true, 안 들어가면 false
+	// PtInRect : point in rectangle
+	return rect.PtInRect(CPoint(x, y));
 }
