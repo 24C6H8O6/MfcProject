@@ -239,28 +239,28 @@ void CMfcCImageDlg::moveRect()
 	int nWidth = m_image.GetWidth();
 	int nHeight = m_image.GetHeight();
 	int nPitch = m_image.GetPitch();
+	int nRadius = 20;
 	unsigned char* fm = (unsigned char*)m_image.GetBits();
 	
-	memset(fm, 0xff, nWidth * nHeight);
+	// 이미지를 항상 클리어하고 다시 그리는 부분
+	// memset(fm, 0xff, nWidth * nHeight);
 
-	for (int j = nSttY; j < nSttY+48; j++)
-	{
-		for (int i = nSttX; i < nSttX+64; i++) {
-			if (validImgPos(i,j))
-				fm[j * nPitch + i] = nGray;
+	// 그려지는게 메모리 밖으로 가면 죽음
+	drawCircle(fm, nSttX, nSttY, nRadius, 0xff);
+	drawCircle(fm, ++nSttX, ++nSttY, nRadius, nGray);
 
-		}
-	}
-	nSttX++;
-	nSttY++;
+	// fm : 메모리 주소
+
 	UpdateDisplay();
-
+	CString strFile;
+	strFile.Format(_T("D:\\d.jpg"), nSttX);
+	m_image.Save(strFile);
 }
 
 void CMfcCImageDlg::OnBnClickedBtnAction()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 400; i++) {
 		moveRect();
 		Sleep(10);
 	}
@@ -276,4 +276,33 @@ BOOL CMfcCImageDlg::validImgPos(int x, int y)
 	// CPoint 안의 x,y가  rect 영역에 들어가면 true, 안 들어가면 false
 	// PtInRect : point in rectangle
 	return rect.PtInRect(CPoint(x, y));
+}
+
+void CMfcCImageDlg::drawCircle(unsigned char* fm, int x, int y, int nRadius, int nGray)
+{
+	int nCenterX = x + nRadius;
+	int nCenterY = y + nRadius;
+	int nPitch = m_image.GetPitch();
+
+	for (int j = y; j < y + nRadius * 2; j++) {
+		for (int i = x; i < x + nRadius * 2; i++) {
+			if(isInCircle(i,j,nCenterX,nCenterY,nRadius))
+				fm[j * nPitch + i] = nGray;
+		}
+	}
+};
+
+bool CMfcCImageDlg::isInCircle(int i, int j, int nCenterX, int nCenterY, int nRadius)
+{
+	bool bRet = false;
+
+	double dX = i - nCenterX;
+	double dY = j - nCenterY;
+	double dDist = dX * dX + dY * dY;
+
+	if (dDist < nRadius * nRadius) {
+		bRet = true;
+	}
+
+	return bRet;
 }
