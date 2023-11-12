@@ -65,6 +65,7 @@ BEGIN_MESSAGE_MAP(CMfcBitmapBtnDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -100,6 +101,15 @@ BOOL CMfcBitmapBtnDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	// 0,0의 위치에서 100,50으로 버튼 생성
+	CRect rect(0, 0, 100, 50);
+	// Dialog 상에 버튼의 위치를 옮기면 거기에서 버튼 생성
+	GetDlgItem(IDC_BTN_ON_OFF)->GetWindowRect(&rect);
+	// GetDlgItem(IDC_BTN_ON_OFF)->GetClientRect(&rect);
+	m_pBtnOnOff = new CBitmapButton;
+	m_pBtnOnOff->Create(NULL, WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, rect, this, IDC_BTN_ON_OFF);
+	m_pBtnOnOff->LoadBitmaps(IDB_ON, IDB_OFF);
+	m_pBtnOnOff->SizeToContent();
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -153,3 +163,20 @@ HCURSOR CMfcBitmapBtnDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+BOOL CMfcBitmapBtnDlg::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CPngImage image;
+	image.Load(IDB_BASE, nullptr);
+	CDC dc;
+	dc.CreateCompatibleDC(pDC);
+	CBitmap* pOldBitmap = dc.SelectObject(&image);
+
+	pDC->BitBlt(0, 0, 640, 480, &dc, 0, 0, SRCCOPY);
+	dc.SelectObject(pOldBitmap);
+	return TRUE;
+
+	return CDialogEx::OnEraseBkgnd(pDC);
+}

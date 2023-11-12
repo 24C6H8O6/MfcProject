@@ -20,7 +20,7 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
-
+	CBitmapButton* m_pBtnOnOff;
 // 구현입니다.
 protected:
 	HICON m_hIcon;
@@ -31,4 +31,6 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

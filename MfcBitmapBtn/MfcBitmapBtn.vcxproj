@@ -208,6 +208,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\DlgBase.png" />
     <Image Include="res\MfcBitmapBtn.ico" />
     <Image Include="res\Off.bmp" />
     <Image Include="res\On.bmp" />
