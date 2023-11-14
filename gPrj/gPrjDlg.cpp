@@ -1,11 +1,11 @@
 ﻿
-// MfcBitmapBtnDlg.cpp: 구현 파일
+// gPrjDlg.cpp: 구현 파일
 //
 
 #include "pch.h"
 #include "framework.h"
-#include "MfcBitmapBtn.h"
-#include "MfcBitmapBtnDlg.h"
+#include "gPrj.h"
+#include "gPrjDlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -46,34 +46,31 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CMfcBitmapBtnDlg 대화 상자
+// CgPrjDlg 대화 상자
 
 
 
-CMfcBitmapBtnDlg::CMfcBitmapBtnDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_MFCBITMAPBTN_DIALOG, pParent)
+CgPrjDlg::CgPrjDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD_GPRJ_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CMfcBitmapBtnDlg::DoDataExchange(CDataExchange* pDX)
+void CgPrjDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 }
 
-BEGIN_MESSAGE_MAP(CMfcBitmapBtnDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CgPrjDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_WM_ERASEBKGND()
-	ON_WM_DESTROY()
-	ON_BN_CLICKED(IDC_BTN_ON_OFF, &CMfcBitmapBtnDlg::OnBnClickedBtnOnOff)
 END_MESSAGE_MAP()
 
 
-// CMfcBitmapBtnDlg 메시지 처리기
+// CgPrjDlg 메시지 처리기
 
-BOOL CMfcBitmapBtnDlg::OnInitDialog()
+BOOL CgPrjDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -103,12 +100,11 @@ BOOL CMfcBitmapBtnDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	InitButtons();
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
-void CMfcBitmapBtnDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void CgPrjDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
@@ -125,7 +121,7 @@ void CMfcBitmapBtnDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 애플리케이션의 경우에는
 //  프레임워크에서 이 작업을 자동으로 수행합니다.
 
-void CMfcBitmapBtnDlg::OnPaint()
+void CgPrjDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -152,61 +148,8 @@ void CMfcBitmapBtnDlg::OnPaint()
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
 //  이 함수를 호출합니다.
-HCURSOR CMfcBitmapBtnDlg::OnQueryDragIcon()
+HCURSOR CgPrjDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-BOOL CMfcBitmapBtnDlg::OnEraseBkgnd(CDC* pDC)
-{
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	CPngImage image;
-	image.Load(IDB_BASE, nullptr);
-	CDC dc;
-	dc.CreateCompatibleDC(pDC);
-	CBitmap* pOldBitmap = dc.SelectObject(&image);
-
-	pDC->BitBlt(0, 0, 640, 480, &dc, 0, 0, SRCCOPY);
-	dc.SelectObject(pOldBitmap);
-	return TRUE;
-
-	return CDialogEx::OnEraseBkgnd(pDC);
-}
-
-void CMfcBitmapBtnDlg::InitButtons()
-{
-	// 0,0의 위치에서 100,50으로 버튼 생성
-	CRect rect(0, 0, 100, 50);
-	// Dialog 상에 버튼의 위치를 옮기면 거기에서 버튼 생성
-	GetDlgItem(IDC_BTN_ON_OFF)->GetWindowRect(&rect);
-	// GetDlgItem(IDC_BTN_ON_OFF)->GetClientRect(&rect);
-	// new 하면 delete가 있어야 함
-	m_pBtnOnOff = new CBitmapButton;
-	m_pBtnOnOff->Create(NULL, WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, rect, this, IDC_BTN_ON_OFF);
-	m_pBtnOnOff->LoadBitmaps(IDB_ON, IDB_OFF);
-	m_pBtnOnOff->SizeToContent();
-}
-
-void CMfcBitmapBtnDlg::OnDestroy()
-{
-	CDialogEx::OnDestroy();
-
-	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
-	if (m_pBtnOnOff) delete m_pBtnOnOff;
-}
-
-
-void CMfcBitmapBtnDlg::OnBnClickedBtnOnOff()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	static bool bOn = false;
-	if (bOn) {
-		m_pBtnOnOff->LoadBitmaps(IDB_ON);
-	}
-	else {
-		m_pBtnOnOff->LoadBitmaps(IDB_OFF);
-	}
-	bOn = !bOn;
-}
