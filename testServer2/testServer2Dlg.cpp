@@ -109,13 +109,15 @@ BOOL CtestServer2Dlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	
+
 	// Listen 소켓 초기화 ★★
 	m_pServerSocket = new CServerSocket;
 	m_pServerSocket->SetWnd(this->m_hWnd);
-
 	// 소켓 Listen 하기 ★★
 	m_pServerSocket->Create(PORT);
 	m_pServerSocket->Listen();
+
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -169,14 +171,18 @@ HCURSOR CtestServer2Dlg::OnQueryDragIcon()
 }
 
 
-
+// 클라이언트가 서버에 연결 수락되었을 때 작동
+// 받아온 데이터 (LPARAM)pClient가 LPARAM lParam 임
 afx_msg LRESULT CtestServer2Dlg::OnAcceptSocket(WPARAM wParam, LPARAM lParam)
 {
 	CString str;
+	// 받아온 소켓 정보를 m_pClientSocket이라는 ClientSocket으로 저장 
 	m_pClientSocket = (CClientSocket*)lParam;
+	// 클라이언트 소켓 포인터를 리스트에 추가
 	m_ptrClientSocketList.AddTail(m_pClientSocket);
-
+	// 클라이언트 소켓 정보를 포매팅하여 CString 형태의 str에 저장
 	str.Format(_T("Client (%d)"), (int)(m_pClientSocket));
+	// m_list_client라는 리스트 박스에 추가
 	m_list_client.InsertString(-1, str);
 
 	// m_pClientSocket = NULL;
@@ -184,12 +190,14 @@ afx_msg LRESULT CtestServer2Dlg::OnAcceptSocket(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-
+// 서버가 메시지를 받으면 실행되는 핸들러
+// LPARAM lParam : CClientSocket::OnReceive 함수로부터 받아온 데이터 strTmp
 afx_msg LRESULT CtestServer2Dlg::OnClientMsgRecv(WPARAM wParam, LPARAM lParam)
 {
 	LPCTSTR lpszStr = (LPCTSTR)lParam;
 
 	// BroadCasting
+	// 서버에 연결된 모든 클라이언트 리스트의 첫번째 요소를 pos로 저장
 	POSITION pos = m_ptrClientSocketList.GetHeadPosition();
 
 	while (pos != NULL)

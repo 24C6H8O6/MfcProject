@@ -61,6 +61,7 @@ CtestClient2Dlg::CtestClient2Dlg(CWnd* pParent /*=nullptr*/)
 void CtestClient2Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	// 추가한 부분
 	DDX_Control(pDX, IDC_EDIT_SEND, m_edit_send);
 	DDX_Control(pDX, IDC_LIST_MSG, m_list_msg);
 }
@@ -107,6 +108,8 @@ BOOL CtestClient2Dlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+
+	// 서버 연결 부분(클라이언트를 실행하면 바로 연결됨)
 	m_ClientSocket.SetWnd(this->m_hWnd);
 	m_ClientSocket.Create();
 	if (m_ClientSocket.Connect(_T("127.0.0.1"), PORT) == FALSE) {
@@ -168,13 +171,7 @@ HCURSOR CtestClient2Dlg::OnQueryDragIcon()
 
 afx_msg LRESULT CtestClient2Dlg::OnClientRecv(WPARAM wParam, LPARAM lParam)
 {
-	/*LPCSTR lpszStr = (LPCTSTR)lParam;
-	CString msgCStr(lpszStr);
-	m_list_msg.InsertString(-1, msgCStr);
-	m_list_msg.InsertString(m_list_msg.GetCount() - 1);*/
-
 	CString msgCStr = (LPCTSTR)lParam;
-
 	// CString을 사용하여 리스트에 메시지 추가
 	m_list_msg.AddString(msgCStr);
 	return 0;
@@ -184,13 +181,22 @@ afx_msg LRESULT CtestClient2Dlg::OnClientRecv(WPARAM wParam, LPARAM lParam)
 void CtestClient2Dlg::OnBnClickedBtnSend()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
 	CString str;
+	// LPCTSTR(Long Pointer to Const TCHAR String)
+	// 문자열을 가리키는 포인터 lpctstr 선언
 	LPCTSTR lpctstr;
+	// 다이얼로그의 컨트롤과 멤버 변수 간의 데이터를 동기화
 	UpdateData(TRUE);
+	// m_edit_send의 텍스트를 str에 저장
 	m_edit_send.GetWindowTextW(str);
+	// str을 TCHAR 문자열 포인터로 변환
 	lpctstr = (LPCTSTR)str;
-	// m_ClientSocket.Send((LPVOID)(LPCTSTR)str,str.GetLength()*2);
+	// m_ClientSocket을 사용해 문자열을 서버로 전송
+	// lstrlen(lpctstr)*2 : 유니코드 문자열의 길이를 바이트 단위로 2바이트씩 처리
 	m_ClientSocket.Send(lpctstr,lstrlen(lpctstr)*2);
+	// 윈도우의 텍스트 지우고
 	m_edit_send.SetWindowTextW(_T(""));
+	// 다이얼로그 데이터 업데이트
 	UpdateData(FALSE);
 }
