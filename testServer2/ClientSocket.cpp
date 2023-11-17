@@ -25,7 +25,7 @@ void CClientSocket::SetWnd(HWND hWnd)
 	m_hWnd = hWnd;
 }
 
-//
+
 void CClientSocket::OnReceive(int nErrorCode)
 {
 	// 문자열 저장하는 변수 strTmp, strIPAddress 초기화
@@ -49,6 +49,7 @@ void CClientSocket::OnReceive(int nErrorCode)
 	// 부모 클래스의 OnReceive 함수 호출
 	CSocket::OnReceive(nErrorCode);
 }
+
 
 void CClientSocket::OnClose(int nErrorCode)
 {

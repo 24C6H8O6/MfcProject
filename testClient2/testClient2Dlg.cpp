@@ -64,6 +64,7 @@ void CtestClient2Dlg::DoDataExchange(CDataExchange* pDX)
 	// 추가한 부분
 	DDX_Control(pDX, IDC_EDIT_SEND, m_edit_send);
 	DDX_Control(pDX, IDC_LIST_MSG, m_list_msg);
+	DDX_Control(pDX, IDC_EDIT_FILENAME, m_edit_fn);
 }
 
 BEGIN_MESSAGE_MAP(CtestClient2Dlg, CDialogEx)
@@ -73,6 +74,7 @@ BEGIN_MESSAGE_MAP(CtestClient2Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_SEND, &CtestClient2Dlg::OnBnClickedBtnSend)
 	// 추가한 부분
 	ON_MESSAGE(WM_CLIENT_RECV, &CtestClient2Dlg::OnClientRecv)
+	ON_BN_CLICKED(IDC_BUTTON1, &CtestClient2Dlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -199,4 +201,30 @@ void CtestClient2Dlg::OnBnClickedBtnSend()
 	m_edit_send.SetWindowTextW(_T(""));
 	// 다이얼로그 데이터 업데이트
 	UpdateData(FALSE);
+}
+
+// 파일 보내는 법
+void CtestClient2Dlg::OnBnClickedButton1()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CString str;
+	LPCTSTR strFileName;
+	m_edit_fn.GetWindowTextW(str);
+	strFileName = (LPCTSTR)str;
+	CFile sourceFile;
+	sourceFile.Open((LPCTSTR)strFileName, CFile::modeRead | CFile::typeBinary);
+	bool isFile = true;
+	m_ClientSocket.Send(&isFile, sizeof(bool));
+	int nNameLen = str.GetLength();
+	m_ClientSocket.Send(&nNameLen, 4);
+	m_ClientSocket.Send((LPCTSTR)strFileName, nNameLen);
+	byte* data = new byte[4096];
+	DWORD dwRead;
+	do
+	{
+		dwRead = sourceFile.Read(data, 4096);
+		m_ClientSocket.Send(data, dwRead);
+	} while (dwRead > 0);
+	delete data;
+	sourceFile.Close();
 }
