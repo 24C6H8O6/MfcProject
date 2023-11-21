@@ -13,7 +13,7 @@
 #endif
 
 // 포트번호
-#define PORT 8888
+#define PORT 8080
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
@@ -207,12 +207,13 @@ void CtestClient2Dlg::OnBnClickedBtnSend()
 void CtestClient2Dlg::OnBnClickedButton1()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CString str;
+	/*CString str;
 	LPCTSTR strFileName;
 	m_edit_fn.GetWindowTextW(str);
 	strFileName = (LPCTSTR)str;
 	CFile sourceFile;
 	sourceFile.Open((LPCTSTR)strFileName, CFile::modeRead | CFile::typeBinary);
+	ULONGLONG file_size = sourceFile.GetLength();
 	bool isFile = true;
 	m_ClientSocket.Send(&isFile, sizeof(bool));
 	int nNameLen = str.GetLength();
@@ -226,5 +227,43 @@ void CtestClient2Dlg::OnBnClickedButton1()
 		m_ClientSocket.Send(data, dwRead);
 	} while (dwRead > 0);
 	delete data;
+	sourceFile.Close();*/
+	// 파일 대화상자 열기(파일 열기, 초기 디렉토리, 초기 이름, 파일 반드시 존재 | 읽기전용 제외(파일 필터링))
+	CFileDialog fileDlg(TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T("All Files (*.*)|*.*||"));
+	// 모달로 표시 후 ok 눌러야 다음 코드 진행
+	if (fileDlg.DoModal() != IDOK)
+		return;
+	// 파일 경로
+	CString filePath = fileDlg.GetPathName();
+	// 파일 명
+	CStringA utf8FileName(fileDlg.GetFileName());
+	CFile sourceFile;
+
+	if (!sourceFile.Open(filePath, CFile::modeRead | CFile::typeBinary))
+	{
+		AfxMessageBox(_T("파일을 열 수 없습니다."));
+		return;
+	}
+
+	ULONGLONG fileSize = sourceFile.GetLength();
+	bool isFile = true;
+
+	// 서버로 연결된 소켓 m_ClientSocket을 통해 데이터 전송
+	m_ClientSocket.Send(&isFile, sizeof(bool));  // 파일 전송임을 알리는 플래그
+	m_ClientSocket.Send(&fileSize, sizeof(ULONGLONG));  // 파일 크기 전송
+	int fileNameLen = utf8FileName.GetLength();
+	m_ClientSocket.Send(&fileNameLen, sizeof(int));  // 파일 이름 길이 전송
+	m_ClientSocket.Send(utf8FileName, fileNameLen);  // 파일 이름 전송
+
+	const int bufferSize = 4096;
+	BYTE data[bufferSize];
+	DWORD bytesRead;
+
+	do
+	{
+		bytesRead = sourceFile.Read(data, bufferSize);
+		m_ClientSocket.Send(data, bytesRead);  // 파일 데이터 전송
+	} while (bytesRead > 0);
+
 	sourceFile.Close();
 }
